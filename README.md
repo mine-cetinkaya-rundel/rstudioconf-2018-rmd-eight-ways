@@ -17,7 +17,7 @@ R Markdown provides an authoring framework for data science where you can save a
 
 ## Fifty ways to leave your lover?
 
->The content is all inside your document, she said to me 
->The rendering is easy if you knit it periodically 
->I'd like to help you in your struggle to be reproducible 
->There must be eight ways to knit your R Markdown 
+The content is all inside your document, she said to me  
+The rendering is easy if you knit it periodically  
+I'd like to help you in your struggle to be reproducible  
+There must be eight ways to knit your R Markdown  
