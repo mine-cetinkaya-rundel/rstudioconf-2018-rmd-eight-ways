@@ -1,0 +1,24 @@
+---
+title: "jabba"
+author: "Mine Cetinkaya-Rundel"
+date: "1/22/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(magick)
+```
+
+```{r echo=FALSE, warning=FALSE}
+jabba <- image_read("img/02a/jabba.png")
+
+fig <- image_graph(width = 400, height = 400, res = 96)
+ggplot(data = starwars, aes(x = height, y = mass)) +
+  geom_point()
+dev.off()
+
+out <- fig %>% image_composite(jabba, offset = "+120+30")
+print(out)
+```
