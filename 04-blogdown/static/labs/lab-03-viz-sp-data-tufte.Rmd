@@ -6,13 +6,13 @@ output:
   tufte::tufte_html:
     tufte_variant: "envisioned"
     highlight: pygments
-    css: "www/lab.css"
+    css: lab.css
 link-citations: yes
-runtime: shiny
 ---
 
 ```{r include=FALSE}
 library(tidyverse)
+library(tint)
 library(tufte)
 library(knitr)
 options(
@@ -134,12 +134,9 @@ Each observation in this dataset represents a state, including DC. Along with th
 
 # Exercises
 
-1. What are the dimensions of the Denny's dataset? (Hint: Use inline R code 
-   and functions like `nrow` and `ncol` to compose your answer.) What does 
-   each row in the dataset represent? What are the variables? 
+1. What are the dimensions of the Denny's dataset? (Hint: Use inline R code and functions like `nrow` and `ncol` to compose your answer.) What does each row in the dataset represent? What are the variables? 
 
-2. What are the dimensions of the La Quinta's dataset? What does each row 
-   in the dataset represent? What are the variables?
+2. What are the dimensions of the La Quinta's dataset? What does each row in the dataset represent? What are the variables?
 
 We would like to limit our analysis to Denny's and La Quinta locations in the United States. 
 
@@ -191,9 +188,7 @@ lq <- lq %>%
   filter(country == "United States")
 ```
 
-<div class="ex">
-**Exercise 9:** Which states have the most and fewest Denny's locations? What about La Quinta? Is this surprising? Why or why not?
-</div>
+9. Which states have the most and fewest Denny's locations? What about La Quinta? Is this surprising? Why or why not?
 
 Next, let's calculate which states have the most Denny's locations *per thousand square miles*. This requires *join*ining information from the frequency tables you created in Exercise 8 with information from the `states` data frame.
 
@@ -232,87 +227,6 @@ ggplot(dn_lq, mapping = aes(x = longitude, y = latitude, color = establishment))
 ```
 
 The following two questions ask you to create visualizations. These should follow best practices you learned in class, such as informative titles, axis labels, etc. See http://ggplot2.tidyverse.org/reference/labs.html for help with the syntax. You can also choose different themes to change the overall look of your plots, see http://ggplot2.tidyverse.org/reference/ggtheme.html for help with these.
-
-<!-- SHINY STUFF -->
-
-Next we explore potential clustering of Denny's and La Quinta locations within certain states. To do so we'll `filter` the data for a particular state and visualize the locations of the two establishments. Before writing our own code to create these visualizations, let's play with an interactive map a little bit.
-
-```{r shiny, eval=TRUE, echo=FALSE, message=FALSE}
-# Load packages -----------------------------------------------------
-library(shiny)
-#library(tidyverse)
-
-# Load data ---------------------------------------------------------
-dn_lq_us <- read_csv("data-shiny/dn_lq_us.csv")
-us <- map_data("state")
-
-# Figure out list of states to list ---------------------------------
-states <- dn_lq_us %>%
-  distinct(state) %>%
-  arrange(state) %>%
-  pull()
-
-# Denny's and La Quinta colors --------------------------------------
-lq_col <- "#004827"
-dn_col <- "#FFDE23"
-
-# Define UI ---------------------------------------------------------
-ui <- fluidPage(
-   
-   # Application title
-   titlePanel("Is La Quinta next to Denny's?"),
-   
-   # Sidebar  
-   sidebarLayout(
-      sidebarPanel(
-         selectInput(inputId = "state",
-                     label = "State",
-                     choices = states,
-                     selected = "NC"),
-         checkboxInput(inputId = "zoom",
-                       label = "Zoom in",
-                       value = FALSE)
-      ),
-      
-      # Plot
-      mainPanel(
-         plotOutput("scatterplot")
-      )
-   )
-)
-
-# Server ------------------------------------------------------------
-server <- function(input, output) {
-   
-   output$scatterplot <- renderPlot({
-     if(input$zoom){
-       dn_lq_us %>%
-         filter(state == input$state) %>%
-         ggplot(mapping = aes(x = longitude, y = latitude, color = establishment)) +
-         geom_point(alpha = 0.9, size = 3) +
-           scale_color_manual(values = c(dn_col, lq_col)) +
-         labs(x = "Longitude", y = "Latitude", color = "Establishment") +
-         theme_bw()
-     } else {
-       ggplot(dn_lq_us, mapping = aes(x = longitude, y = latitude)) +
-         geom_polygon(data = us, aes(x = long, y = lat, group = group), fill = NA, color = "lightgray") +
-         geom_point(alpha = 0.5, col = "gray") +
-         geom_point(data = filter(dn_lq_us, state == input$state),
-                    mapping = aes(x = longitude, y = latitude, color = establishment), alpha = 0.8) +
-         scale_color_manual(values = c(dn_col, lq_col)) +
-         labs(x = "Longitude", y = "Latitude", color = "Establishment") +
-         theme_bw()
-     }
-     
-   })
-}
-
-# Create the Shiny app object ---------------------------------------
-#shinyApp(ui = ui, server = server)
-shinyApp(ui = ui, server = server, options = list(width = 1000, height = 500))
-```
-
-<!-- --->
 
 11. Filter the data for observations in North Carolina only, and recreate the plot. You should also adjust the transparency of the points, by setting the `alpha` level, so that it's easier to see the overplotted ones. Visually, does Mitch Hedberg's joke appear to hold here?
 
